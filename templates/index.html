@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-band">
+  <img src="{{ url_for('static', filename='images/ai-learning-banner.png') }}" alt="Students learning with an interactive AI display">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <p class="eyebrow">Full-stack educational platform</p>
+    <h1>Interactive AI Learning App</h1>
+    <p class="lead">Learn science, mathematics, and computer science with AI explanations, immersive 3D models, adaptive quizzes, summaries, and measurable progress.</p>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}">Start Learning</a>
+      <a class="btn btn-light btn-lg" href="{{ url_for('login') }}">Login</a>
+    </div>
+  </div>
+</section>
+
+<section class="container section-pad">
+  <div class="row g-3">
+    {% for title, text in [
+      ("AI Tutor", "Ask educational questions and get simplified explanations with examples."),
+      ("3D Visual Lab", "Explore solar systems, atoms, and cells with click labels and orbit controls."),
+      ("Quiz Generator", "Generate MCQs, get instant feedback, and download your result."),
+      ("Notes Summarizer", "Paste study material and extract concise summaries and key points.")
+    ] %}
+      <div class="col-md-6 col-xl-3">
+        <article class="feature-card h-100">
+          <span class="feature-dot"></span>
+          <h3>{{ title }}</h3>
+          <p>{{ text }}</p>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="subject-band">
+  <div class="container">
+    <div class="section-title">
+      <p class="eyebrow">Subject selection</p>
+      <h2>Choose Your Learning Track</h2>
+    </div>
+    <div class="subject-grid">
+      {% for subject in subjects %}
+        <a class="subject-tile" href="{{ url_for('ai_tutor') }}?subject={{ subject }}">{{ subject }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

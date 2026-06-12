@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}AI Tutor | Interactive AI Learning App{% endblock %}
+{% block content %}
+<section class="container section-pad">
+  <div class="section-title">
+    <p class="eyebrow">Gemini powered tutor</p>
+    <h1>AI Tutor</h1>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <article class="app-card">
+        <label>Subject
+          <select class="form-select" id="subjectSelect">
+            {% for subject in subjects %}<option>{{ subject }}</option>{% endfor %}
+          </select>
+        </label>
+        <label class="mt-3">Question
+          <textarea class="form-control" id="questionInput" rows="8" placeholder="Ask why planets orbit, how cells divide, or how recursion works."></textarea>
+        </label>
+        <button class="btn btn-primary w-100 mt-3" id="askTutor">Ask Tutor</button>
+      </article>
+    </div>
+    <div class="col-lg-8">
+      <article class="chat-panel" id="chatHistory">
+        <div class="empty-chat">Your tutor conversation will appear here.</div>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/tutor.js') }}?v=2"></script>{% endblock %}

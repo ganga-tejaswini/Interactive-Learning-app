@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}3D Visualization | Interactive AI Learning App{% endblock %}
+{% block content %}
+<section class="container-fluid px-0">
+  <div class="visual-toolbar">
+    <div>
+      <p class="eyebrow">Three.js interactive visualization</p>
+      <h1>Explore Learning Models</h1>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary model-btn" data-model="solar">Solar System</button>
+      <button class="btn btn-outline-primary model-btn" data-model="cell">Human Cell</button>
+      <button class="btn btn-outline-primary model-btn" data-model="atom">Atom Structure</button>
+      <button class="btn btn-outline-primary model-btn" data-model="periodic">Periodic Table</button>
+    </div>
+  </div>
+  <div class="visual-stage">
+    <canvas id="visualCanvas"></canvas>
+    <aside class="label-panel">
+      <h2 id="modelTitle">Solar System Model</h2>
+      <p id="modelInfo">Click objects in the scene to inspect labels. Drag to rotate and scroll to zoom.</p>
+      <div id="objectLabel" class="object-label">No object selected</div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/three.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/OrbitControls.js') }}"></script>
+<script src="{{ url_for('static', filename='js/periodicElements.js') }}"></script>
+<script src="{{ url_for('static', filename='js/visualization.js') }}?v=3"></script>
+{% endblock %}

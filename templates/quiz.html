@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Quiz | Interactive AI Learning App{% endblock %}
+{% block content %}
+<section class="container section-pad">
+  <div class="section-title">
+    <p class="eyebrow">AI quiz generator</p>
+    <h1>Generate a Quiz</h1>
+  </div>
+  <article class="app-card mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4"><label>Subject<select class="form-select" id="quizSubject">{% for subject in subjects %}<option>{{ subject }}</option>{% endfor %}</select></label></div>
+      <div class="col-md-6"><label>Topic<input class="form-control" id="quizTopic" value="Newton's laws"></label></div>
+      <div class="col-md-2"><button class="btn btn-primary w-100" id="generateQuiz">Generate</button></div>
+    </div>
+  </article>
+  <div id="quizArea" class="quiz-area"></div>
+  <article class="result-box d-none" id="quizResultBox">
+    <h2 id="quizScoreText"></h2>
+    <p id="quizSummaryText"></p>
+    <button class="btn btn-outline-primary" id="downloadPdf">Download PDF</button>
+  </article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}?v=2"></script>
+{% endblock %}
