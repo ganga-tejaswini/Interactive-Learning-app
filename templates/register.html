@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Register | Interactive AI Learning App{% endblock %}
+{% block content %}
+<section class="auth-wrap container">
+  <form class="auth-card" method="post">
+    <p class="eyebrow">Create learner profile</p>
+    <h1>Register</h1>
+    <label>Name<input class="form-control" type="text" name="name" required></label>
+    <label>Email<input class="form-control" type="email" name="email" required></label>
+    <label>Password<input class="form-control" type="password" name="password" minlength="6" required></label>
+    <button class="btn btn-primary w-100" type="submit">Create Account</button>
+    <p class="mb-0">Already registered? <a href="{{ url_for('login') }}">Login</a></p>
+  </form>
+</section>
+{% endblock %}

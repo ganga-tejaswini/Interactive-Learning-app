@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Interactive AI Learning App</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">AI</span>
+        <div>
+          <strong>Interactive AI Learning App</strong>
+          <small>Education + 2.5D + Simulation + Quiz</small>
+        </div>
+      </div>
+      <nav class="tabs" aria-label="Main navigation">
+        <button class="tab active" data-view="dashboard">Dashboard</button>
+        <button class="tab" data-view="learn">Modules</button>
+        <button class="tab" data-view="lab">3D Lab</button>
+        <button class="tab" data-view="practice">Practice</button>
+        <button class="tab" data-view="quiz">Quiz</button>
+        <button class="tab" data-view="progress">Progress</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="dashboard" class="view active">
+        <div class="hero">
+          <img src="assets/ai-learning-banner.png" alt="Students learning artificial intelligence with an interactive display">
+          <div class="hero-copy">
+            <p class="eyebrow">Academic internship project</p>
+            <h1>Interactive AI Learning App</h1>
+            <p>Learn machine learning by exploring a 2.5D neural network, running a training simulation, using AI-style explanations, answering quizzes, and tracking progress.</p>
+            <div class="hero-actions">
+              <button class="primary" data-jump="lab">Explore 3D Lab</button>
+              <button class="secondary" data-jump="practice">Start Practical</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="stats" aria-label="Learning statistics">
+          <article>
+            <span id="completedCount">0</span>
+            <p>Modules completed</p>
+          </article>
+          <article>
+            <span id="bestScore">0%</span>
+            <p>Best quiz score</p>
+          </article>
+          <article>
+            <span id="labScore">0%</span>
+            <p>Lab accuracy</p>
+          </article>
+          <article>
+            <span id="studyMinutes">0</span>
+            <p>Estimated minutes</p>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="feature-panel">
+            <p class="eyebrow">Problem statement</p>
+            <h2>Build an AI-powered learning app</h2>
+            <p>This project teaches artificial intelligence using visual models, simulations, topic-wise explanation, quizzes, and learner feedback instead of static PDF-style content.</p>
+          </article>
+          <article class="feature-panel checklist">
+            <p class="eyebrow">Instruction coverage</p>
+            <ul>
+              <li>2.5D neural network visualization with labels and exploration mode</li>
+              <li>Topic-wise AI explanation using generated text and browser voice</li>
+              <li>Interactive quiz with instant feedback and score</li>
+              <li>Drag-and-drop practical simulation activity</li>
+              <li>Mobile-friendly UI, progress tracking, and reflection notes</li>
+            </ul>
+          </article>
+        </section>
+      </section>
+
+      <section id="learn" class="view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">At least 3 learning modules</p>
+            <h2>AI Learning Modules</h2>
+          </div>
+          <label class="search-box">
+            <span>Search</span>
+            <input id="moduleSearch" type="search" placeholder="Find a topic">
+          </label>
+        </div>
+        <div class="learn-layout">
+          <aside class="module-list" id="moduleList" aria-label="AI modules"></aside>
+          <article class="lesson-panel">
+            <div class="lesson-header">
+              <div>
+                <p class="eyebrow" id="lessonTag">Module</p>
+                <h2 id="lessonTitle">Select a module</h2>
+              </div>
+              <div class="button-row">
+                <button class="secondary" id="explainModule">AI Explain</button>
+                <button class="secondary" id="speakModule">Voice</button>
+                <button class="primary" id="completeModule">Mark Complete</button>
+              </div>
+            </div>
+            <p id="lessonBody" class="lesson-body"></p>
+            <div class="split-panels">
+              <div class="example-box">
+                <strong>Real-world example</strong>
+                <p id="lessonExample"></p>
+              </div>
+              <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-live="polite">
+                <span>Flashcard</span>
+                <p id="flashcardText"></p>
+              </div>
+            </div>
+            <div class="ai-explainer" aria-live="polite">
+              <strong>AI-style explanation</strong>
+              <p id="aiExplanation">Choose AI Explain to generate a simple explanation for the selected topic.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="lab" class="view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">2.5D visualization and exploration mode</p>
+            <h2>Neural Network Explorer</h2>
+          </div>
+          <div class="button-row">
+            <button class="secondary" id="resetNetwork">Reset View</button>
+            <button class="primary" id="animateNetwork">Run Signal</button>
+          </div>
+        </div>
+
+        <div class="lab-layout">
+          <article class="network-stage" aria-label="Interactive 2.5D neural network">
+            <div class="network-scene" id="networkScene">
+              <div class="connection c1"></div>
+              <div class="connection c2"></div>
+              <div class="connection c3"></div>
+              <div class="connection c4"></div>
+              <button class="node input n1" data-node="Input layer: receives raw features such as study hours and test score.">Study Hours</button>
+              <button class="node input n2" data-node="Input layer: receives another feature used by the model.">Test Score</button>
+              <button class="node hidden n3" data-node="Hidden layer: combines inputs and learns weighted patterns.">Pattern</button>
+              <button class="node hidden n4" data-node="Hidden layer: transforms patterns into a stronger signal.">Confidence</button>
+              <button class="node output n5" data-node="Output layer: predicts whether the student is ready or needs revision.">Prediction</button>
+            </div>
+          </article>
+          <aside class="inspector">
+            <p class="eyebrow">Node inspector</p>
+            <h3 id="nodeTitle">Click a node</h3>
+            <p id="nodeDescription">Explore each part of the model to understand input, hidden, and output layers.</p>
+            <label for="complexityRange">Model complexity</label>
+            <input id="complexityRange" type="range" min="1" max="5" value="3">
+            <p id="complexityText">Balanced model: useful patterns without too much overfitting risk.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="practice" class="view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Simulation and drag-and-drop practical</p>
+            <h2>Train a Student Readiness Model</h2>
+          </div>
+          <button class="secondary" id="resetPractice">Reset Practical</button>
+        </div>
+
+        <div class="practice-layout">
+          <article class="data-bank">
+            <h3>Data cards</h3>
+            <p>Drag the useful features into the training area. Avoid noisy or unfair features.</p>
+            <div id="dataCards" class="data-cards"></div>
+          </article>
+          <article class="training-zone" id="trainingZone">
+            <h3>Training area</h3>
+            <p>Drop feature cards here to train the model.</p>
+            <div id="selectedFeatures" class="selected-features"></div>
+            <button class="primary" id="trainModel">Train Model</button>
+          </article>
+          <article class="simulation-result">
+            <p class="eyebrow">Simulation output</p>
+            <h3 id="simulationTitle">Model not trained yet</h3>
+            <p id="simulationText">Select relevant features and train the model to see accuracy, fairness, and feedback.</p>
+            <div class="meter">
+              <span id="accuracyMeter"></span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="quiz" class="view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Instant feedback and score</p>
+            <h2>AI Fundamentals Quiz</h2>
+          </div>
+          <button class="secondary" id="resetQuiz">Reset Quiz</button>
+        </div>
+        <div class="quiz-grid" id="quizGrid"></div>
+        <div class="result-panel">
+          <div>
+            <p class="eyebrow">Current result</p>
+            <h3 id="quizResult">Answer the questions to see your score.</h3>
+          </div>
+          <button class="primary" id="submitQuiz">Submit Answers</button>
+        </div>
+      </section>
+
+      <section id="progress" class="view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Progress tracking and deliverables</p>
+            <h2>Project Summary</h2>
+          </div>
+          <button class="secondary" id="clearProgress">Clear Saved Progress</button>
+        </div>
+        <div class="progress-layout">
+          <article class="certificate">
+            <p class="eyebrow">Completion preview</p>
+            <h2>AI Learning Completion</h2>
+            <p id="certificateText">Complete modules, lab practice, and quiz to generate your learning summary.</p>
+            <div class="progress-bar" aria-label="Completion progress">
+              <span id="progressFill"></span>
+            </div>
+          </article>
+          <article class="notes-panel">
+            <label for="reflectionNotes">Reflection notes</label>
+            <textarea id="reflectionNotes" rows="8" placeholder="Write what you learned, challenges faced, and future improvements."></textarea>
+          </article>
+          <article class="deliverables">
+            <p class="eyebrow">Explanation of AI/model/API used</p>
+            <h3>Model approach</h3>
+            <p>This app uses a browser-based simulated supervised learning model. Learners choose features, train the model, inspect weighted outputs, receive AI-style explanations, and hear explanations using the Web Speech API. The 2.5D model is built with HTML, CSS transforms, and JavaScript so it works without paid API keys.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Complete front-end internship project: learning modules, 2.5D model, AI explanation, voice, quiz, simulation, and progress tracking.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
