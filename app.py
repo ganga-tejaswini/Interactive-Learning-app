@@ -1,6 +1,9 @@
 import json
 import os
 import sqlite3
+import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import date, datetime, timedelta
 from functools import wraps
 
@@ -19,12 +22,6 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-try:
-    from google import genai as google_genai
-except ImportError:
-    google_genai = None
-
-
 load_dotenv(override=True)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -33,6 +30,7 @@ SUBJECTS = ["Physics", "Chemistry", "Biology", "Mathematics", "Computer Science"
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-change-this-secret")
+GEMINI_TIMEOUT_SECONDS = float(os.environ.get("GEMINI_TIMEOUT_SECONDS", "8"))
 
 
 def get_db():
@@ -144,36 +142,97 @@ def gemini_text(prompt):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         app.logger.error("GEMINI_API_KEY not found in environment")
-        return {"error": "API key is missing."}
+        return None
     model = os.environ.get("GEMINI_MODEL", "models/gemini-flash-lite-latest")
     app.logger.info("Sending tutor prompt to Gemini model: %s", model)
+
     try:
-        if google_genai is not None:
-            client = google_genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-            )
-            return response.text.strip()
-        app.logger.error("google.genai module not available")
-        return {"error": "AI client library is not installed."}
-    except Exception as exc:
-        error_text = str(exc)
-        app.logger.error("Gemini request failed: %s", error_text)
-        return {"error": error_text}
+        encoded_model = urllib.parse.quote(model, safe="/")
+        url = f"https://generativelanguage.googleapis.com/v1beta/{encoded_model}:generateContent?key={api_key}"
+        body = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=GEMINI_TIMEOUT_SECONDS) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        parts = payload["candidates"][0]["content"]["parts"]
+        return "\n".join(part.get("text", "") for part in parts).strip() or None
+    except urllib.error.HTTPError as exc:
+        app.logger.error("Gemini HTTP error: %s", exc.read().decode("utf-8", errors="replace"))
+        return None
+    except (urllib.error.URLError, TimeoutError) as exc:
+        app.logger.error("Gemini network error: %s", exc)
+        return None
+    except (KeyError, IndexError, json.JSONDecodeError) as exc:
+        app.logger.error("Unexpected Gemini response format: %s", exc)
+        return None
 
 
 def fallback_explanation(subject, question):
+    topic = question.strip() or "this topic"
+    normalized = topic.lower()
+    topic_guides = [
+        (
+            ("newton", "laws of motion", "motion"),
+            "Newton's laws explain how forces change motion. First law: an object stays at rest or keeps moving unless a net force acts on it. Second law: force equals mass times acceleration, written as F = m x a. Third law: every action has an equal and opposite reaction. Example: when a bat hits a ball, the bat applies force to the ball and the ball applies force back to the bat. These laws are used in vehicle safety, rockets, sports, and machine design.",
+        ),
+        (
+            ("gravity", "gravitation"),
+            "Gravity is the attractive force between objects that have mass. On Earth, gravity pulls objects downward and gives them weight. In space, gravity keeps planets moving around the Sun and keeps moons moving around planets. Example: a dropped ball falls because Earth attracts it. Practical uses include satellite orbits, weighing objects, and predicting planetary motion.",
+        ),
+        (
+            ("photosynthesis",),
+            "Photosynthesis is the process plants use to make food. Leaves take in carbon dioxide from air and water from soil, then use sunlight and chlorophyll to produce glucose and oxygen. In simple words, sunlight energy becomes chemical energy stored in sugar. This process supports food chains and adds oxygen to the atmosphere.",
+        ),
+        (
+            ("cell division", "mitosis", "meiosis"),
+            "Cell division is how cells make new cells. In mitosis, one body cell divides into two genetically identical cells for growth and repair. In meiosis, reproductive cells are formed with half the chromosome number. This matters for healing wounds, body growth, reproduction, and genetic variation.",
+        ),
+        (
+            ("atom", "electron", "proton", "neutron"),
+            "An atom is the smallest unit of an element that still keeps that element's properties. The nucleus contains protons and neutrons, while electrons occupy regions around the nucleus. Protons are positive, electrons are negative, and neutrons are neutral. Atomic structure explains bonding, electricity, materials, and chemical reactions.",
+        ),
+        (
+            ("recursion",),
+            "Recursion is a programming technique where a function calls itself to solve a smaller version of the same problem. A recursive solution needs a base case to stop and a recursive case to continue. Example: factorial(5) becomes 5 x factorial(4), continuing until factorial(1). Recursion is useful in tree traversal, file systems, search problems, and divide-and-conquer algorithms.",
+        ),
+        (
+            ("java",),
+            "Java is a high-level, object-oriented programming language used to build desktop apps, Android apps, web backends, and enterprise systems. Java code is usually compiled into bytecode, which runs on the Java Virtual Machine, so the same program can run on many operating systems. Important Java ideas include classes, objects, methods, inheritance, interfaces, exception handling, and packages. Example: a Student class can store a student's name and marks, and methods can calculate the grade. Java is widely used because it is portable, strongly typed, secure, and has a large ecosystem.",
+        ),
+        (
+            ("oops", "oop", "object oriented", "object-oriented", "class", "object"),
+            "Object-oriented programming organizes code using classes and objects. A class is a blueprint, and an object is a real instance created from that blueprint. The four main OOP principles are encapsulation, inheritance, polymorphism, and abstraction. Example: a Vehicle class can define common features, while Car and Bike classes can inherit and customize them. OOP helps make large programs easier to structure, reuse, and maintain.",
+        ),
+        (
+            ("python",),
+            "Python is a high-level programming language known for readable syntax and fast development. It is used in web development, data science, automation, artificial intelligence, scripting, and education. Python code often looks close to plain English, which makes it beginner-friendly. Example: a few lines of Python can read a file, analyze data, or build a small web app. Its large library ecosystem is one of its biggest strengths.",
+        ),
+        (
+            ("database", "sql", "sqlite", "mysql"),
+            "A database stores organized data so an application can save, search, update, and retrieve information. SQL databases store data in tables with rows and columns. Example: this learning app can store users, quiz results, learning history, and summaries in SQLite tables. SQL commands such as SELECT, INSERT, UPDATE, and DELETE are used to work with the stored data.",
+        ),
+        (
+            ("algorithm", "data structure", "array", "stack", "queue", "linked list"),
+            "An algorithm is a step-by-step method for solving a problem, while a data structure is a way to organize data efficiently. Arrays store items in order, stacks follow last-in-first-out, queues follow first-in-first-out, and linked lists connect items using references. Choosing the right data structure can make a program faster and easier to understand.",
+        ),
+    ]
+    for keywords, explanation in topic_guides:
+        if any(keyword in normalized for keyword in keywords):
+            return explanation
     return (
-        f"Here is a simplified {subject} explanation: {question} connects to a core idea, "
-        "so start with the definition, identify the variables involved, and test the idea with "
-        "a small real example. In practice, learners should draw the process, solve one numeric "
-        "or conceptual example, and explain where the idea appears in daily life or technology."
+        f"Gemini is currently unavailable, so here is a local {subject} explanation for '{topic}'. "
+        "Start by identifying the main concept, write its definition in simple words, connect it to one example, "
+        "and then solve a practice problem. A good study approach is: define the idea, list the important parts, "
+        "draw a diagram if possible, and explain one real-life use."
     )
 
 
 def parse_json_response(text, fallback):
-    if not text:
+    if not text or not isinstance(text, str):
         return fallback
     cleaned = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     try:
@@ -334,17 +393,10 @@ def api_tutor():
         "Include short steps, one example, and one practical application. Keep it under 220 words."
     )
     ai_result = gemini_text(prompt)
-    if isinstance(ai_result, dict) and ai_result.get("error"):
-        error_msg = ai_result["error"]
-        user_msg = (
-            "The AI tutor is unavailable right now. "
-            "Please check your Gemini quota or billing settings and try again."
-        )
-        app.logger.error("Tutor API error returned to user: %s", error_msg)
-        return jsonify({"answer": user_msg}), 503
+    using_fallback = not bool(ai_result)
     answer = ai_result or fallback_explanation(subject, question)
     add_history(subject, question[:60] or "AI tutor question", "AI Tutor", answer[:240])
-    return jsonify({"answer": answer})
+    return jsonify({"answer": answer, "using_fallback": using_fallback})
 
 
 @app.route("/visualization")

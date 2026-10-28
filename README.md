@@ -1,6 +1,6 @@
 # Interactive AI Learning App
 
-A complete Flask full-stack educational platform with authentication, SQLite progress tracking, Gemini-powered tutoring and summaries, AI quiz generation, Three.js visualizations, Chart.js progress charts, dark mode, learning streaks, topic recommendations, and PDF quiz result downloads.
+A complete Flask full-stack educational platform with authentication, SQLite progress tracking, Gemini-powered tutoring and summaries, AI quiz generation, interactive visualizations, Chart.js progress charts, dark mode, learning streaks, topic recommendations, and PDF quiz result downloads.
 
 ## Features
 
@@ -9,7 +9,7 @@ A complete Flask full-stack educational platform with authentication, SQLite pro
 - AI tutor for Physics, Chemistry, Biology, Mathematics, and Computer Science
 - Notes summarizer with concise summaries and important points
 - Quiz generator with MCQs, instant feedback, score saving, and PDF export
-- Interactive Three.js models: solar system, human cell, and atom structure
+- Interactive science models: solar system, human cell, and atom structure
 - SQLite tables for users, quiz results, learning history, and notes summaries
 - Dashboard with quiz statistics, learning streak, recent activity, recommendations, and Chart.js progress
 - Dark mode toggle saved in browser local storage
@@ -62,25 +62,35 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-3. Set your Gemini API key.
+3. Add your Gemini API key in a local `.env` file.
 
-```bash
-set GEMINI_API_KEY=your_google_gemini_api_key
+```text
+GEMINI_API_KEY=your_google_gemini_api_key
+GEMINI_MODEL=models/gemini-flash-lite-latest
+GEMINI_TIMEOUT_SECONDS=4
+SECRET_KEY=replace_this_for_production
 ```
 
-PowerShell:
-
-```powershell
-$env:GEMINI_API_KEY="your_google_gemini_api_key"
-```
+Keep `.env` private. It is already listed in `.gitignore`.
 
 4. Run the app.
 
-```bash
+```powershell
 python app.py
 ```
 
 5. Open the local URL shown by Flask, usually `http://127.0.0.1:5000`.
+
+## Troubleshooting
+
+If the site opens but AI answers are fallback responses:
+
+- Make sure your Gemini key is from Google AI Studio.
+- Confirm the machine has internet access.
+- Increase `GEMINI_TIMEOUT_SECONDS` if your connection is slow.
+- Restart Flask after editing `.env`.
+
+If dependencies are missing, run `pip install -r requirements.txt` again inside your virtual environment.
 
 ## Notes
 

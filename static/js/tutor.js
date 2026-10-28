@@ -27,7 +27,10 @@ document.getElementById("askTutor")?.addEventListener("click", async (event) => 
       body: JSON.stringify({ subject: subjectSelect.value, question })
     });
     const data = await response.json();
-    loading.textContent = data?.answer || "Sorry, the tutor did not respond. Please try again.";
+    const answer = data?.answer || "Sorry, the tutor did not respond. Please try again.";
+    loading.textContent = data?.using_fallback
+      ? `Gemini did not respond, so this is a local explanation:\n\n${answer}`
+      : answer;
     if (!response.ok) {
       loading.classList.add("error");
     }
